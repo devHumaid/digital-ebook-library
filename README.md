@@ -141,22 +141,21 @@ end
 
 ## 9. AI Tools Used and How
 
-> Fill this in honestly before submitting — the assignment specifically evaluates this section (Section 5 & the "AI-Assisted Development" evaluation criterion). Below is a template; replace the bracketed parts with what you actually did.
-
-**Tools used:** [e.g. Claude Code, Cursor, GitHub Copilot — list what you actually used]
+**Tools used:** Claude (primary), ChatGPT (minor problem-solving)
 
 **How they were used:**
-- [e.g. "Used Claude Code to scaffold the initial Rails controller and model, then reviewed and adjusted validations myself."]
-- [e.g. "Used Cursor's inline chat to help debug the PDF pager's slider-jank issue in `reader_screen.dart`."]
-- [e.g. "AI-generated the first draft of the RSpec request specs; I added the oversized-file and missing-title edge cases it initially missed."]
+- Used Claude throughout development for building out screens (library, reader, upload), the bookshelf UI, and the API service/provider layer, then reviewed and adjusted the generated code myself before committing it.
+- Used Claude to review the Flutter test suite and identify that the original tests (search, empty state, delete confirmation) were written against hand-built stand-in widgets instead of the real `LibraryScreen` — meaning they'd keep passing even if the real screen broke. Had Claude rewrite them as proper integration tests against the actual screen.
+- Used Claude to debug a git issue where `rails new` had auto-initialized a nested `.git` repo inside `ebook_library_backend/`, which was silently blocking `git add .` from staging the backend folder at all.
+- Used ChatGPT for smaller one-off issues during development (isolated syntax/debugging questions), not for larger feature or architecture work.
 
-**AI-assisted parts:** [e.g. bookshelf UI, PDF pager caching logic, RSpec scaffolding]
+**AI-assisted parts:** Bookshelf UI, PDF reader screen, upload/search/delete flows, RSpec request/model specs, Flutter widget tests, README.
 
-**Manually reviewed/changed parts:** [e.g. rewrote the debounce logic after AI's first version caused duplicate API calls; changed file validation to reject EPUB mime-type spoofing]
+**Manually reviewed/changed parts:** Reviewed all generated code before committing; verified backend validations (file type, 50MB size limit) actually matched what the model enforced; confirmed API routes and request specs lined up with the real `routes.rb`.
 
-**AI-generated code rejected or corrected:** [be specific — this is one of the things evaluators look for; even one honest example is stronger than claiming everything was perfect]
+**AI-generated code rejected or corrected:** The original Flutter test suite's search/empty-state/delete tests were rejected and rewritten — they tested disconnected placeholder widgets rather than the real screen, so passing them proved nothing about the actual app. Also caught that `EbookProvider` instantiated `ApiService()` directly with no way to inject a fake for testing, and refactored it to accept an optional injected instance.
 
-**How AI helped with testing/debugging/architecture:** [e.g. "Asked AI to review the EbookProvider for testability, which surfaced that ApiService wasn't injectable — refactored based on that."]
+**How AI helped with testing/debugging/architecture:** Claude's review of the provider surfaced the untestable architecture (hardcoded `ApiService()`), which led to the constructor-injection fix. Also used it to work out the emulator vs. physical-device networking difference (`10.0.2.2` vs. LAN IP vs. `-b 0.0.0.0` binding) when the app couldn't reach the local Rails server from a physical device.
 
 ## 10. Known Limitations
 
@@ -169,21 +168,25 @@ end
 
 ## 11. Manual Testing Checklist
 
-- [ ] Upload a valid PDF with title + author → appears on shelf
-- [ ] Upload without selecting a file → shows validation error, does not submit
-- [ ] Upload a file over 50MB → backend rejects with clear error message
-- [ ] Upload a non-PDF/EPUB file → rejected with clear error message
-- [ ] Search for an existing title → correct result shown
-- [ ] Search for a nonsense query → "No ebooks match your search" shown
-- [ ] Clear search → full library restored
-- [ ] Sort by title / author / recent → order updates correctly
-- [ ] Open a PDF → renders, page nav and zoom work
-- [ ] Download an ebook → success message shown, file present on device
-- [ ] Delete an ebook → confirmation dialog appears; Cancel keeps it, Delete removes it
-- [ ] Delete with backend offline → error shown, ebook remains in list
-- [ ] Empty library state → correct empty-shelf message and upload prompt shown
-- [ ] Kill and reopen the app → library reloads correctly from backend
+- [x] Upload a valid PDF with title + author → appears on shelf
+- [x] Upload without selecting a file → shows validation error, does not submit
+- [x] Upload a file over 50MB → backend rejects with clear error message
+- [x] Upload a non-PDF/EPUB file → rejected with clear error message
+- [x] Search for an existing title → correct result shown
+- [x] Search for a nonsense query → "No ebooks match your search" shown
+- [x] Clear search → full library restored
+- [x] Sort by title / author / recent → order updates correctly
+- [x] Open a PDF → renders, page nav and zoom work
+- [x] Download an ebook → success message shown, file present on device
+- [x] Delete an ebook → confirmation dialog appears; Cancel keeps it, Delete removes it
+- [x] Delete with backend offline → error shown, ebook remains in list
+- [x] Empty library state → correct empty-shelf message and upload prompt shown
+- [x] Kill and reopen the app → library reloads correctly from backend
 
-## 12. Screenshots / video
+## 12. Screenshots / Video
+
 https://drive.google.com/drive/folders/1dxJJ8N46L8jLuudvApm500C1m3S0DkFZ?usp=sharing
 
+## 13. Test Results
+
+Screenshots of `bundle exec rspec` and `flutter test` passing are included in the same Drive folder linked above (Section 12).
