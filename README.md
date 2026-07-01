@@ -185,4 +185,5 @@ end
 - [ ] Kill and reopen the app → library reloads correctly from backend
 
 ## 12. Screenshots / video
+https://drive.google.com/drive/folders/1dxJJ8N46L8jLuudvApm500C1m3S0DkFZ?usp=sharing
 
